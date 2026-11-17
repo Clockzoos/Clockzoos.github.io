@@ -54,9 +54,9 @@
         <h2>Strike Script Key Generation</h2>
         <p id="status-desc">Complete the link to unlock your key.</p>
 
-        <!-- Tombol Menuju Linkvertise (Ganti link target sesuai Linkvertise Anda) -->
+        <!-- Tombol Menuju Linkvertise (Terhubung dengan link terbaru Anda) -->
         <div id="step-start">
-            <a href="https://link-center.net/7791978/WzmwVM2iH36x" class="btn" target="_blank">Proceed to Linkvertise</a>
+            <a href="https://link-center.net/7791978/WzmwVM2iH36x?r=https://clockzoos.github.io/?verified=true" class="btn" target="_blank">Proceed to Linkvertise</a>
         </div>
 
         <!-- Tombol Claim Key -->
@@ -89,18 +89,31 @@
         const db = getFirestore(firebaseApp);
 
         window.addEventListener('DOMContentLoaded', () => {
+            const todayDate = new Date().toDateString(); // Contoh: "Wed Nov 18 2026"
+            const lastGeneratedDate = localStorage.getItem('strike_last_date');
             const urlParams = new URLSearchParams(window.location.search);
-            
-            // Jika user baru kembali dari Linkvertise membawa ?verified=true
+
+            // 1. Cek apakah perangkat ini sudah mengambil key hari ini
+            if (lastGeneratedDate === todayDate) {
+                document.getElementById('step-start').style.display = 'none';
+                document.getElementById('step-claim').style.display = 'none';
+                document.getElementById('status-desc').textContent = "You have already generated a key today. Please come back tomorrow!";
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Limit Reached',
+                    text: 'Perangkat/IP Anda sudah mengambil 1 key hari ini. Silakan kembali besok!',
+                    confirmButtonColor: '#eab308'
+                });
+                return;
+            }
+
+            // 2. Jika baru kembali dari Linkvertise membawa ?verified=true
             if (urlParams.get('verified') === 'true') {
-                // Simpan status ke session browser agar aman dan tidak gampang di-refresh sembarangan
                 sessionStorage.setItem('link_passed', 'true');
-                
-                // Bersihkan URL agar bersih dari parameter ?verified=true
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
 
-            // Cek apakah session sudah sah (artinya benar-benar dari Linkvertise)
+            // 3. Tampilkan tombol claim jika sudah melewati Linkvertise
             if (sessionStorage.getItem('link_passed') === 'true') {
                 document.getElementById('status-desc').textContent = "Link verified successfully! Click below to claim your key.";
                 document.getElementById('step-start').style.display = 'none';
@@ -113,12 +126,21 @@
         });
 
         window.claimKey = async function() {
+            const todayDate = new Date().toDateString();
+
+            // Proteksi ganda saat tombol diklik
+            if (localStorage.getItem('strike_last_date') === todayDate) {
+                Swal.fire('Error', 'You can only generate 1 key per day.', 'error');
+                return;
+            }
+
             const r1 = Math.floor(1000 + Math.random() * 9000);
             const r2 = Math.floor(1000 + Math.random() * 9000);
             const newKey = `STRIKE-${r1}-${r2}`;
             const expiryTime = Math.floor(Date.now() / 1000) + (24 * 60 * 60);
 
             try {
+                // Simpan ke database Firebase
                 await setDoc(doc(db, "keys", newKey), {
                     key: newKey,
                     expiryTime: expiryTime,
@@ -126,7 +148,8 @@
                     created: new Date().toISOString()
                 });
 
-                // Hapus session agar token verifikasi hangus setelah diklaim (tidak bisa diklaim berulang kali)
+                // Catat tanggal hari ini ke perangkat agar tidak bisa generate lagi hari ini
+                localStorage.setItem('strike_last_date', todayDate);
                 sessionStorage.removeItem('link_passed');
 
                 document.getElementById('step-claim').style.display = 'none';
