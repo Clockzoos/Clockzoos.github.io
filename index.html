@@ -54,12 +54,12 @@
         <h2>Strike Script Key Generation</h2>
         <p id="status-desc">Complete the link to unlock your key.</p>
 
-        <!-- Tombol Menuju Linkvertise Barumu -->
+        <!-- Tombol Menuju Linkvertise (Ganti link target sesuai Linkvertise Anda) -->
         <div id="step-start">
-            <a href="https://link-hub.net/7791978/iWQoPZ7obsob?r=https://clockzoos.github.io/?step=done" class="btn" target="_blank">Proceed to Linkvertise</a>
+            <a href="https://link-center.net/7791978/WzmwVM2iH36x" class="btn" target="_blank">Proceed to Linkvertise</a>
         </div>
 
-        <!-- Tombol Claim Key (Muncul Otomatis Jika Balik dari Linkvertise) -->
+        <!-- Tombol Claim Key -->
         <div id="step-claim" style="display:none;">
             <button class="btn btn-success" onclick="claimKey()">Claim My 24H Key</button>
         </div>
@@ -91,8 +91,17 @@
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             
-            // Mengecek apakah user kembali membawa parameter ?step=done dari Linkvertise
-            if (urlParams.get('step') === 'done') {
+            // Jika user baru kembali dari Linkvertise membawa ?verified=true
+            if (urlParams.get('verified') === 'true') {
+                // Simpan status ke session browser agar aman dan tidak gampang di-refresh sembarangan
+                sessionStorage.setItem('link_passed', 'true');
+                
+                // Bersihkan URL agar bersih dari parameter ?verified=true
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+
+            // Cek apakah session sudah sah (artinya benar-benar dari Linkvertise)
+            if (sessionStorage.getItem('link_passed') === 'true') {
                 document.getElementById('status-desc').textContent = "Link verified successfully! Click below to claim your key.";
                 document.getElementById('step-start').style.display = 'none';
                 document.getElementById('step-claim').style.display = 'block';
@@ -116,6 +125,9 @@
                     used: false,
                     created: new Date().toISOString()
                 });
+
+                // Hapus session agar token verifikasi hangus setelah diklaim (tidak bisa diklaim berulang kali)
+                sessionStorage.removeItem('link_passed');
 
                 document.getElementById('step-claim').style.display = 'none';
                 document.getElementById('status-desc').textContent = "Your 24-hour access key is ready:";
