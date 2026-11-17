@@ -40,6 +40,8 @@
         }
         .btn:hover { background: var(--color-primary-hover); }
         .btn-success { background: var(--color-success); color: #fff; }
+        .btn-danger { background: var(--color-danger); color: #fff; margin-top: 10px; font-size: 12px; padding: 10px; }
+        .btn-danger:hover { background: #dc2626; }
         .key-box {
             background: #0a0a0a; border: 1px dashed var(--color-primary);
             padding: 14px; border-radius: 10px; font-family: monospace; font-size: 14px;
@@ -54,21 +56,24 @@
         <h2>Strike Script Key Generation</h2>
         <p id="status-desc">Complete the link to unlock your key.</p>
 
-        <!-- Tombol Linkvertise (Link terbaru Anda) -->
+        <!-- Linkvertise Button -->
         <div id="step-start">
             <a href="https://link-center.net/7791978/WzmwVM2iH36x?r=https://clockzoos.github.io/?verified=true" class="btn" target="_blank">Proceed to Linkvertise</a>
         </div>
 
-        <!-- Tombol Claim Key -->
+        <!-- Claim Key Button -->
         <div id="step-claim" style="display:none;">
             <button class="btn btn-success" onclick="claimKey()">Claim My 24H Key</button>
         </div>
 
-        <!-- Kotak Hasil Key -->
+        <!-- Result Key Box -->
         <div id="key-display-container" class="key-box">
             <div id="final-key-text" style="margin-bottom: 8px; font-weight: bold;"></div>
             <button class="btn btn-success" style="padding: 8px; font-size: 12px;" onclick="copyKey()">Copy Key</button>
         </div>
+
+        <!-- Tombol Reset Limit (Hanya untuk memudahkan testing Anda sekarang) -->
+        <button class="btn btn-danger" onclick="resetLimit()">Reset My Daily Limit (Test Mode)</button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -100,7 +105,7 @@
                 Swal.fire({
                     icon: 'warning',
                     title: 'Limit Reached',
-                    text: 'Perangkat/IP Anda sudah mengambil 1 key hari ini. Silakan kembali besok!',
+                    text: 'Your device has already claimed a key today. (You can use the Reset button below to test again)',
                     confirmButtonColor: '#eab308'
                 });
                 return;
@@ -133,7 +138,6 @@
             const r1 = Math.floor(1000 + Math.random() * 9000);
             const r2 = Math.floor(1000 + Math.random() * 9000);
             const newKey = `STRIKE-${r1}-${r2}`;
-            // Menggunakan timestamp milidetik agar mudah dibandingkan dengan os.time() Roblox (dibagi 1000)
             const expiryTime = Math.floor(Date.now() / 1000) + (24 * 60 * 60);
 
             try {
@@ -162,6 +166,20 @@
             const keyText = document.getElementById('final-key-text').textContent;
             navigator.clipboard.writeText(keyText);
             Swal.fire('Copied!', 'Key copied to clipboard.', 'success');
+        }
+
+        // Fungsi khusus untuk mereset limit harian agar Anda bisa melakukan test berkali-kali
+        window.resetLimit = function() {
+            localStorage.removeItem('strike_last_date');
+            sessionStorage.clear();
+            Swal.fire({
+                icon: 'success',
+                title: 'Limit Reset!',
+                text: 'Your daily limit has been cleared. Page will reload.',
+                confirmButtonColor: '#22c55e'
+            }).then(() => {
+                window.location.href = window.location.pathname;
+            });
         }
     </script>
 </body>
