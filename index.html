@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strike Script Key Generation</title>
+    <link rel="icon" type="image/jpeg" href="https://i.ibb.co.com/p6YWQyxK/1794896099706.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        :root {
+            --bg-primary: #000000;
+            --surface: #050505;
+            --color-primary: #eab308;
+            --color-primary-hover: #ca8a04;
+            --color-border: #1a1a1a;
+            --color-text: #ffffff;
+            --color-text-muted: #a0a0a0;
+            --color-success: #22c55e;
+            --color-danger: #ef4444;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: var(--bg-primary); color: var(--color-text);
+            font-family: 'Inter', sans-serif; display: flex;
+            justify-content: center; align-items: center; min-height: 100vh; padding: 20px;
+        }
+        .card {
+            background: var(--surface); border: 1px solid var(--color-border);
+            border-radius: 20px; padding: 36px; width: 100%; max-width: 420px; text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.9);
+        }
+        .logo { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin: 0 auto 16px; border: 2px solid var(--color-primary); }
+        h2 { font-size: 20px; margin-bottom: 8px; color: #fff; }
+        p { font-size: 13px; color: var(--color-text-muted); margin-bottom: 24px; }
+        .btn {
+            background: var(--color-primary); color: #000; border: none;
+            padding: 13px 20px; border-radius: 12px; font-weight: 700; cursor: pointer;
+            width: 100%; font-size: 14px; transition: 0.2s; text-decoration: none; display: inline-block;
+        }
+        .btn:hover { background: var(--color-primary-hover); }
+        .btn-success { background: var(--color-success); color: #fff; }
+        .btn-danger { background: var(--color-danger); color: #fff; }
+        .key-box {
+            background: #0a0a0a; border: 1px dashed var(--color-primary);
+            padding: 14px; border-radius: 10px; font-family: monospace; font-size: 14px;
+            color: var(--color-primary); word-break: break-all; margin-top: 15px; display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <img src="https://i.ibb.co.com/p6YWQyxK/1794896099706.jpg" class="logo" alt="Logo">
+        <h2>Strike Script Key Generation</h2>
+        <p id="status-desc">Checking your link access...</p>
+
+        <!-- Tampilan Tombol Awal Sebelum ke Linkvertise -->
+        <div id="step-start" style="display:none;">
+            <a href="https://link-hub.net/7791978/iWQoPZ7obsob" id="linkvertise-btn" class="btn" target="_blank">Proceed to Linkvertise</a>
+        </div>
+
+        <!-- Tampilan Tombol Claim Key Setelah Lewati Linkvertise -->
+        <div id="step-claim" style="display:none;">
+            <button class="btn btn-success" onclick="claimKey()">Claim My 24H Key</button>
+        </div>
+
+        <!-- Kotak Hasil Key -->
+        <div id="key-display-container" class="key-box">
+            <div id="final-key-text" style="margin-bottom: 8px; font-weight: bold;"></div>
+            <button class="btn btn-success" style="padding: 8px; font-size: 12px;" onclick="copyKey()">Copy Key</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyBkLQc3Lhn9Rnq2NTMezoW0eTfNDyFIFyw",
+          authDomain: "key-server-af0df.firebaseapp.com",
+          projectId: "key-server-af0df",
+          storageBucket: "key-server-af0df.firebasestorage.app",
+          messagingSenderId: "464032962986",
+          appId: "1:464032962986:web:d6abf41d878fa32102f3d3"
+        };
+
+        const firebaseApp = initializeApp(firebaseConfig);
+        const db = getFirestore(firebaseApp);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Linkvertise biasanya otomatis mengirim parameter (seperti r, o, atau hash dari sistem mereka)
+            // Kita cek apakah user datang dari Linkvertise atau baru buka web biasa.
+            const hasCompleted = urlParams.has('r') || urlParams.has('o') || urlParams.has('hash') || sessionStorage.getItem('visited_lv') === 'true';
+
+            // Jika user klik tombol Proceed to Linkvertise
+            document.getElementById('linkvertise-btn').addEventListener('click', () => {
+                sessionStorage.setItem('visited_lv', 'true');
+            });
+
+            if (urlParams.has('r') || urlParams.has('o') || urlParams.has('hash')) {
+                sessionStorage.setItem('visited_lv', 'true');
+            }
+
+            if (sessionStorage.getItem('visited_lv') === 'true') {
+                // Berhasil melewati / mengklik linkvertise
+                document.getElementById('status-desc').textContent = "Link verified successfully! Click below to claim your key.";
+                document.getElementById('step-start').style.display = 'none';
+                document.getElementById('step-claim').style.display = 'block';
+            } else {
+                // Belum klik / buka langsung
+                document.getElementById('status-desc').textContent = "Complete the Linkvertise target to generate your key.";
+                document.getElementById('step-start').style.display = 'block';
+                document.getElementById('step-claim').style.display = 'none';
+            }
+        });
+
+        window.claimKey = async function() {
+            const r1 = Math.floor(1000 + Math.random() * 9000);
+            const r2 = Math.floor(1000 + Math.random() * 9000);
+            const newKey = `STRIKE-${r1}-${r2}`;
+            const expiryTime = Math.floor(Date.now() / 1000) + (24 * 60 * 60);
+
+            try {
+                // Simpan ke database Firebase 'keys'
+                await setDoc(doc(db, "keys", newKey), {
+                    key: newKey,
+                    expiryTime: expiryTime,
+                    used: false,
+                    created: new Date().toISOString()
+                });
+
+                // Reset session supaya harus lewati linkvertise lagi kalau mau key baru besoknya
+                sessionStorage.removeItem('visited_lv');
+
+                document.getElementById('step-claim').style.display = 'none';
+                document.getElementById('status-desc').textContent = "Your 24-hour access key is ready:";
+                document.getElementById('final-key-text').textContent = newKey;
+                document.getElementById('key-display-container').style.display = 'block';
+
+                Swal.fire('Success!', 'Key generated successfully.', 'success');
+            } catch (e) {
+                Swal.fire('Error', 'Failed to save key to database.', 'error');
+            }
+        };
+
+        window.copyKey = function() {
+            const keyText = document.getElementById('final-key-text').textContent;
+            navigator.clipboard.writeText(keyText);
+            Swal.fire('Copied!', 'Key copied to clipboard.', 'success');
+        }
+    </script>
+</body>
+</html>
