@@ -35,7 +35,7 @@
 
         .container {
             width: 100%;
-            max-width: 680px;
+            max-width: 700px;
             background: var(--panel-color);
             padding: 32px;
             border-radius: 16px;
@@ -99,8 +99,7 @@
 
         input[type="text"],
         input[type="number"],
-        textarea,
-        select {
+        textarea {
             width: 100%;
             padding: 12px 14px;
             background: var(--input-color);
@@ -112,7 +111,7 @@
             transition: all 0.2s ease;
         }
 
-        input:focus, textarea:focus, select:focus {
+        input:focus, textarea:focus {
             border-color: var(--accent-color);
             outline: none;
             box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
@@ -130,6 +129,63 @@
 
         .row .form-group {
             flex: 1;
+        }
+
+        .media-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .file-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .file-btn {
+            background: #24171a;
+            color: #f3e8ea;
+            border: 1px solid var(--border-color);
+            padding: 9px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .file-btn:hover {
+            border-color: var(--accent-color);
+            background: #331c20;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-name {
+            font-size: 12px;
+            color: var(--text-muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+
+        .clear-file-btn {
+            background: transparent;
+            color: #f87171;
+            border: none;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 4px 6px;
+        }
+
+        .clear-file-btn:hover {
+            color: #ef4444;
         }
 
         .color-picker-wrapper {
@@ -165,12 +221,6 @@
             width: 100%;
         }
         .color-hex-text:focus { outline: none; box-shadow: none !important; }
-
-        .input-select-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
 
         button.send-btn {
             width: 100%;
@@ -278,17 +328,15 @@
                 <input type="text" id="username" placeholder="Bot Spammers">
             </div>
             <div class="form-group">
-                <label>Bot Avatar URL (optional)</label>
-                <div class="input-select-group">
-                    <input type="text" id="avatarUrl" value="https://i.ibb.co.com/RpdnZ1mZ/icon.jpg" placeholder="https://... or select preset">
-                    <select onchange="selectPresetImage('avatarUrl', this.value)">
-                        <option value="">-- Select Preset Avatar --</option>
-                        <option value="https://i.ibb.co.com/RpdnZ1mZ/icon.jpg" selected>Default Profile Icon</option>
-                        <option value="https://cdn.discordapp.com/attachments/1568549380779282525/1570665206365950094/1eeecb4da59989b1560292e1a43c95b5.jpg">Image Preset 1</option>
-                        <option value="https://cdn.discordapp.com/attachments/1568549380779282525/1570665206701363321/9cfba9b4cc1d06fbe0f00263cbc926de.jpg">Image Preset 2</option>
-                        <option value="https://cdn.discordapp.com/attachments/1568549380779282525/1570665207385300992/c7719f42290a0bc802979589327a0967.jpg">Image Preset 3</option>
-                        <option value="https://cdn.discordapp.com/attachments/1568549380779282525/1570665207741808650/21782f4bfbc674a3ed5bfb40dfcaef79.jpg">Image Preset 4</option>
-                    </select>
+                <label>Bot Avatar (optional)</label>
+                <div class="media-box">
+                    <input type="text" id="avatarUrl" placeholder="Paste image link here...">
+                    <div class="file-row">
+                        <label for="avatarFile" class="file-btn">Choose File</label>
+                        <input type="file" id="avatarFile" accept="image/*,.gif" onchange="handleFileSelect('avatarFile', 'avatarFileName', 'avatarUrl')">
+                        <span id="avatarFileName" class="file-name">No file selected</span>
+                        <button type="button" class="clear-file-btn" onclick="clearFile('avatarFile', 'avatarFileName')">Clear</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -296,8 +344,8 @@
         <div class="section-title">Content & GIF Details</div>
 
         <div class="form-group">
-            <label>Message Content or Direct GIF Link (optional)</label>
-            <input type="text" id="content" placeholder="Type message or paste Tenor/Giphy link here...">
+            <label>Message Content (optional)</label>
+            <input type="text" id="content" placeholder="Type message or GIF link here...">
         </div>
 
         <div class="form-group">
@@ -319,18 +367,15 @@
                 </div>
             </div>
             <div class="form-group">
-                <label>Embed Image or GIF URL (optional)</label>
-                <div class="input-select-group">
-                    <input type="text" id="embedImage" placeholder="https://.../animation.gif or image link">
-                    <select onchange="selectPresetImage('embedImage', this.value)">
-                        <option value="">-- Select Preset Image / GIF --</option>
-                        <option value="https://media.tenor.com/x8v1oNUOmg4AAAAd/rickroll-roll.gif">GIF Preset 1</option>
-                        <option value="https://media.tenor.com/2roX3uxz_68AAAAC/cat-space.gif">GIF Preset 2</option>
-                        <option value="https://cdn.discordapp.com/attachments/1568549380779282525/1570665206365950094/1eeecb4da59989b1560292e1a43c95b5.jpg">Image Preset 1</option>
-                        <option value="https://cdn.discordapp.com/attachments/1568549380779282525/1570665206701363321/9cfba9b4cc1d06fbe0f00263cbc926de.jpg">Image Preset 2</option>
-                        <option value="https://cdn.discordapp.com/attachments/1568549380779282525/1570665207385300992/c7719f42290a0bc802979589327a0967.jpg">Image Preset 3</option>
-                        <option value="https://cdn.discordapp.com/attachments/1568549380779282525/1570665207741808650/21782f4bfbc674a3ed5bfb40dfcaef79.jpg">Image Preset 4</option>
-                    </select>
+                <label>Embed Image or GIF (optional)</label>
+                <div class="media-box">
+                    <input type="text" id="embedImage" placeholder="Paste image or GIF link here...">
+                    <div class="file-row">
+                        <label for="embedFile" class="file-btn">Choose File</label>
+                        <input type="file" id="embedFile" accept="image/*,.gif" onchange="handleFileSelect('embedFile', 'embedFileName', 'embedImage')">
+                        <span id="embedFileName" class="file-name">No file selected</span>
+                        <button type="button" class="clear-file-btn" onclick="clearFile('embedFile', 'embedFileName')">Clear</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -352,10 +397,22 @@
     </div>
 
     <script>
-        function selectPresetImage(targetId, url) {
-            if (url) {
-                document.getElementById(targetId).value = url;
+        function handleFileSelect(inputId, labelId, urlInputId) {
+            const input = document.getElementById(inputId);
+            const label = document.getElementById(labelId);
+            if (input.files && input.files[0]) {
+                label.textContent = input.files[0].name;
+                document.getElementById(urlInputId).value = '';
+            } else {
+                label.textContent = 'No file selected';
             }
+        }
+
+        function clearFile(inputId, labelId) {
+            const input = document.getElementById(inputId);
+            const label = document.getElementById(labelId);
+            input.value = '';
+            label.textContent = 'No file selected';
         }
 
         function syncColor(source) {
@@ -389,15 +446,30 @@
             return parseInt(cleanHex, 16);
         }
 
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
         async function sendWebhook() {
             const webhookUrl = document.getElementById('webhookUrl').value.trim();
             const username = document.getElementById('username').value.trim();
             const avatarUrl = document.getElementById('avatarUrl').value.trim();
+            const avatarFileInput = document.getElementById('avatarFile');
+            const avatarFile = avatarFileInput.files && avatarFileInput.files[0] ? avatarFileInput.files[0] : null;
+
             const content = document.getElementById('content').value.trim();
             const embedTitle = document.getElementById('embedTitle').value.trim();
             const embedDesc = document.getElementById('embedDesc').value.trim();
             const hexColor = document.getElementById('embedColorHex').value;
-            const embedImage = document.getElementById('embedImage').value.trim();
+            const embedImageUrl = document.getElementById('embedImage').value.trim();
+            const embedFileInput = document.getElementById('embedFile');
+            const embedFile = embedFileInput.files && embedFileInput.files[0] ? embedFileInput.files[0] : null;
+
             const loopCount = parseInt(document.getElementById('loopCount').value) || 1;
             const delayTime = (parseInt(document.getElementById('delayTime').value) || 1) * 1000;
             const sendBtn = document.getElementById('sendBtn');
@@ -407,22 +479,36 @@
                 return;
             }
 
-            if (!content && !embedTitle && !embedDesc && !embedImage) {
-                showToast('Please fill at least one content or embed field!', 'warning');
+            if (!content && !embedTitle && !embedDesc && !embedImageUrl && !embedFile) {
+                showToast('Please fill at least one content, embed, or file field!', 'warning');
                 return;
+            }
+
+            let resolvedAvatarUrl = avatarUrl;
+            if (!resolvedAvatarUrl && avatarFile) {
+                try {
+                    resolvedAvatarUrl = await fileToBase64(avatarFile);
+                } catch (e) {
+                    showToast('Failed to read avatar file.', 'error');
+                    return;
+                }
             }
 
             const payload = {};
             if (username) payload.username = username;
-            if (avatarUrl) payload.avatar_url = avatarUrl;
+            if (resolvedAvatarUrl) payload.avatar_url = resolvedAvatarUrl;
             if (content) payload.content = content;
 
-            if (embedTitle || embedDesc || embedImage) {
+            if (embedTitle || embedDesc || embedImageUrl || embedFile) {
                 const embed = {};
                 if (embedTitle) embed.title = embedTitle;
                 if (embedDesc) embed.description = embedDesc;
                 embed.color = hexToDecimal(hexColor);
-                if (embedImage) embed.image = { url: embedImage };
+                if (embedFile) {
+                    embed.image = { url: `attachment://${embedFile.name}` };
+                } else if (embedImageUrl) {
+                    embed.image = { url: embedImageUrl };
+                }
                 payload.embeds = [embed];
             }
 
@@ -432,11 +518,24 @@
             let successCount = 0;
             for (let i = 1; i <= loopCount; i++) {
                 try {
-                    const response = await fetch(webhookUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
+                    let response;
+
+                    if (embedFile) {
+                        const formData = new FormData();
+                        formData.append('payload_json', JSON.stringify(payload));
+                        formData.append('files[0]', embedFile, embedFile.name);
+
+                        response = await fetch(webhookUrl, {
+                            method: 'POST',
+                            body: formData
+                        });
+                    } else {
+                        response = await fetch(webhookUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                    }
 
                     if (response.status === 429) {
                         showToast(`Hit Discord Rate Limit! Stopped at message #${i}.`, 'error');
