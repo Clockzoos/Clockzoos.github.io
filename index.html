@@ -60,6 +60,24 @@
             border-radius: 999px;
         }
 
+        .btn-new-post {
+            background-color: var(--primary-red);
+            color: #ffffff;
+            border: 1px solid var(--bright-red);
+            padding: 0.48rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            font-weight: 700;
+            box-shadow: 0 0 14px rgba(217, 4, 41, 0.35);
+            transition: all 0.2s;
+        }
+
+        .btn-new-post:hover {
+            background-color: var(--bright-red);
+            transform: translateY(-1px);
+        }
+
         .btn-outline-red {
             background: transparent;
             color: #ff6b6b;
@@ -109,28 +127,44 @@
             margin-top: 0.2rem;
         }
 
-        /* Modal Login Melayang di Tengah */
+        /* Modal Backdrop Melayang di Tengah */
         .modal-backdrop {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.78);
+            background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(5px);
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 1.2rem;
             z-index: 999;
+            overflow-y: auto;
+        }
+
+        .modal-backdrop.top-layer {
+            z-index: 1200;
         }
 
         .modal-box {
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
+            max-height: 90vh;
+            overflow-y: auto;
             background-color: #190707;
             border: 1px solid var(--bright-red);
             border-radius: 14px;
             padding: 1.5rem;
-            box-shadow: 0 12px 35px rgba(217, 4, 41, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.04);
+            box-shadow: 0 14px 38px rgba(217, 4, 41, 0.38), 0 0 0 1px rgba(255, 255, 255, 0.04);
             animation: popIn 0.18s ease-out;
+        }
+
+        .modal-box.wide {
+            max-width: 520px;
+        }
+
+        .modal-box.compact {
+            max-width: 380px;
+            text-align: center;
         }
 
         @keyframes popIn {
@@ -144,34 +178,18 @@
             }
         }
 
-        /* Main Container */
-        .container {
-            max-width: 960px;
-            margin: 2rem auto 4rem;
-            padding: 0 1.2rem;
-        }
-
-        /* Admin Panel Card */
-        .panel-card {
-            background-color: var(--bg-panel);
-            border: 1px solid var(--border-red);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
-        }
-
         .panel-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
             border-bottom: 1px solid var(--border-red);
             padding-bottom: 0.7rem;
             margin-bottom: 1.2rem;
         }
 
         .panel-header h2 {
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             color: #ff5959;
         }
 
@@ -249,6 +267,60 @@
         .form-actions .btn-primary {
             flex: 1;
             width: auto;
+        }
+
+        /* Custom Alert / Confirm Content */
+        .custom-dialog-badge {
+            display: inline-block;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0.25rem 0.7rem;
+            border-radius: 999px;
+            margin-bottom: 0.75rem;
+            background: rgba(217, 4, 41, 0.2);
+            color: #ff758f;
+            border: 1px solid var(--bright-red);
+        }
+
+        .custom-dialog-badge.success {
+            background: rgba(34, 197, 94, 0.15);
+            color: #6ee7b7;
+            border-color: #16a34a;
+        }
+
+        .custom-dialog-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.45rem;
+        }
+
+        .custom-dialog-message {
+            font-size: 0.94rem;
+            color: var(--text-muted);
+            margin-bottom: 1.35rem;
+            line-height: 1.5;
+        }
+
+        .custom-dialog-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .custom-dialog-actions .btn-primary,
+        .custom-dialog-actions .btn-secondary {
+            min-width: 110px;
+            width: auto;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 960px;
+            margin: 2rem auto 4rem;
+            padding: 0 1.2rem;
         }
 
         /* Section Title */
@@ -395,6 +467,7 @@
     <header>
         <div class="admin-bar">
             <span id="adminBadge" class="admin-status hidden">Mode Admin Aktif</span>
+            <button id="newPostBtn" class="btn-new-post hidden">+ New Post</button>
             <button id="toggleLoginBtn" class="btn-outline-red">Admin Login</button>
             <button id="logoutBtn" class="btn-outline-red hidden">Logout</button>
         </div>
@@ -427,11 +500,12 @@
         </div>
     </div>
 
-    <div class="container">
-        <!-- Admin Panel: Buat & Edit Post -->
-        <div id="adminPanel" class="panel-card hidden">
+    <!-- Popup New Post / Edit Post Melayang di Tengah -->
+    <div id="postModal" class="modal-backdrop hidden">
+        <div class="modal-box wide">
             <div class="panel-header">
-                <h2 id="panelTitle">Admin Panel — Buat Post Baru</h2>
+                <h2 id="panelTitle">New Post — Buat Post Baru</h2>
+                <button type="button" id="closePostModalBtn" class="btn-secondary">Tutup</button>
             </div>
             <form id="postForm">
                 <input type="hidden" id="editingPostId">
@@ -458,11 +532,23 @@
 
                 <div class="form-actions">
                     <button type="submit" class="btn-primary" id="savePostBtn">Publish Post</button>
-                    <button type="button" class="btn-secondary hidden" id="cancelEditBtn">Batal Edit</button>
+                    <button type="button" class="btn-secondary" id="cancelPostModalBtn">Batal</button>
                 </div>
             </form>
         </div>
+    </div>
 
+    <!-- Custom Alert & Confirm Modal -->
+    <div id="customDialogModal" class="modal-backdrop top-layer hidden">
+        <div class="modal-box compact">
+            <span id="dialogBadge" class="custom-dialog-badge">Notifikasi</span>
+            <h3 id="dialogTitle" class="custom-dialog-title">Info</h3>
+            <p id="dialogMessage" class="custom-dialog-message"></p>
+            <div id="dialogActions" class="custom-dialog-actions"></div>
+        </div>
+    </div>
+
+    <div class="container">
         <!-- Daftar Post Publik -->
         <h3 class="section-title">Semua Post Website</h3>
         <div class="posts-grid" id="postsContainer">
@@ -509,6 +595,8 @@
         const db = getFirestore(app);
         const postsCollection = collection(db, "troll_tools_posts");
 
+        // Elemen Header & Login
+        const newPostBtn = document.getElementById("newPostBtn");
         const toggleLoginBtn = document.getElementById("toggleLoginBtn");
         const logoutBtn = document.getElementById("logoutBtn");
         const closeLoginBtn = document.getElementById("closeLoginBtn");
@@ -517,7 +605,10 @@
         const loginForm = document.getElementById("loginForm");
         const loginSubmitBtn = document.getElementById("loginSubmitBtn");
 
-        const adminPanel = document.getElementById("adminPanel");
+        // Elemen Popup Post
+        const postModal = document.getElementById("postModal");
+        const closePostModalBtn = document.getElementById("closePostModalBtn");
+        const cancelPostModalBtn = document.getElementById("cancelPostModalBtn");
         const panelTitle = document.getElementById("panelTitle");
         const postForm = document.getElementById("postForm");
         const editingPostIdInput = document.getElementById("editingPostId");
@@ -526,13 +617,74 @@
         const targetUrlInput = document.getElementById("targetUrl");
         const imageUrlInput = document.getElementById("imageUrl");
         const savePostBtn = document.getElementById("savePostBtn");
-        const cancelEditBtn = document.getElementById("cancelEditBtn");
+
+        // Elemen Custom Alert & Confirm
+        const customDialogModal = document.getElementById("customDialogModal");
+        const dialogBadge = document.getElementById("dialogBadge");
+        const dialogTitle = document.getElementById("dialogTitle");
+        const dialogMessage = document.getElementById("dialogMessage");
+        const dialogActions = document.getElementById("dialogActions");
 
         const postsContainer = document.getElementById("postsContainer");
 
         let isAdmin = false;
         let latestPostsDocs = [];
 
+        function showCustomAlert(message, title = "Informasi", type = "info") {
+            return new Promise((resolve) => {
+                dialogBadge.textContent = type === "success" ? "Berhasil" : type === "error" ? "Peringatan" : "Strike Dev";
+                dialogBadge.className = "custom-dialog-badge" + (type === "success" ? " success" : "");
+                dialogTitle.textContent = title;
+                dialogMessage.textContent = message;
+                dialogActions.innerHTML = "";
+
+                const okBtn = document.createElement("button");
+                okBtn.type = "button";
+                okBtn.className = "btn-primary";
+                okBtn.textContent = "OK";
+                okBtn.addEventListener("click", () => {
+                    customDialogModal.classList.add("hidden");
+                    resolve();
+                });
+
+                dialogActions.appendChild(okBtn);
+                customDialogModal.classList.remove("hidden");
+            });
+        }
+
+        function showCustomConfirm(message, title = "Konfirmasi") {
+            return new Promise((resolve) => {
+                dialogBadge.textContent = "Konfirmasi";
+                dialogBadge.className = "custom-dialog-badge";
+                dialogTitle.textContent = title;
+                dialogMessage.textContent = message;
+                dialogActions.innerHTML = "";
+
+                const cancelBtn = document.createElement("button");
+                cancelBtn.type = "button";
+                cancelBtn.className = "btn-secondary";
+                cancelBtn.textContent = "Batal";
+                cancelBtn.addEventListener("click", () => {
+                    customDialogModal.classList.add("hidden");
+                    resolve(false);
+                });
+
+                const confirmBtn = document.createElement("button");
+                confirmBtn.type = "button";
+                confirmBtn.className = "btn-primary";
+                confirmBtn.textContent = "Ya, Lanjutkan";
+                confirmBtn.addEventListener("click", () => {
+                    customDialogModal.classList.add("hidden");
+                    resolve(true);
+                });
+
+                dialogActions.appendChild(cancelBtn);
+                dialogActions.appendChild(confirmBtn);
+                customDialogModal.classList.remove("hidden");
+            });
+        }
+
+        // Toggle Popup Login
         toggleLoginBtn.addEventListener("click", () => {
             loginSection.classList.remove("hidden");
         });
@@ -547,6 +699,28 @@
             }
         });
 
+        // Buka Popup New Post
+        newPostBtn.addEventListener("click", () => {
+            if (!isAdmin) return;
+            resetFormMode();
+            postModal.classList.remove("hidden");
+        });
+
+        function closePostPopup() {
+            postModal.classList.add("hidden");
+            resetFormMode();
+        }
+
+        closePostModalBtn.addEventListener("click", closePostPopup);
+        cancelPostModalBtn.addEventListener("click", closePostPopup);
+
+        postModal.addEventListener("click", (e) => {
+            if (e.target === postModal) {
+                closePostPopup();
+            }
+        });
+
+        // Proses Login Firebase Auth
         loginForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             const email = document.getElementById("adminEmail").value.trim();
@@ -559,39 +733,43 @@
                 await signInWithEmailAndPassword(auth, email, password);
                 loginForm.reset();
                 loginSection.classList.add("hidden");
+                await showCustomAlert("Login berhasil! Tekan tombol + New Post untuk membuat post baru.", "Selamat Datang Admin", "success");
             } catch (error) {
                 console.error("Login gagal:", error);
-                alert("Login gagal! Periksa kembali email dan password admin.");
+                await showCustomAlert("Email atau password admin salah. Silakan coba lagi.", "Login Gagal", "error");
             } finally {
                 loginSubmitBtn.disabled = false;
                 loginSubmitBtn.textContent = "Masuk ke Admin Panel";
             }
         });
 
+        // Proses Logout
         logoutBtn.addEventListener("click", async () => {
             try {
-                resetFormMode();
+                closePostPopup();
                 await signOut(auth);
+                await showCustomAlert("Kamu telah keluar dari mode admin.", "Logout Berhasil", "info");
             } catch (error) {
                 console.error("Logout gagal:", error);
             }
         });
 
+        // Pantau status login admin
         onAuthStateChanged(auth, (user) => {
             isAdmin = Boolean(user);
 
             if (isAdmin) {
                 adminBadge.classList.remove("hidden");
-                adminPanel.classList.remove("hidden");
+                newPostBtn.classList.remove("hidden");
                 logoutBtn.classList.remove("hidden");
                 toggleLoginBtn.classList.add("hidden");
                 loginSection.classList.add("hidden");
             } else {
                 adminBadge.classList.add("hidden");
-                adminPanel.classList.add("hidden");
+                newPostBtn.classList.add("hidden");
                 logoutBtn.classList.add("hidden");
                 toggleLoginBtn.classList.remove("hidden");
-                resetFormMode();
+                closePostPopup();
             }
 
             renderPosts(latestPostsDocs);
@@ -600,48 +778,47 @@
         function resetFormMode() {
             editingPostIdInput.value = "";
             postForm.reset();
-            panelTitle.textContent = "Admin Panel — Buat Post Baru";
+            panelTitle.textContent = "New Post — Buat Post Baru";
             savePostBtn.textContent = "Publish Post";
-            cancelEditBtn.classList.add("hidden");
         }
 
-        cancelEditBtn.addEventListener("click", resetFormMode);
-
+        // Buka Popup Edit Post
         function startEditPost(postId, data) {
             if (!isAdmin) return;
-            adminPanel.classList.remove("hidden");
             editingPostIdInput.value = postId;
             titleInput.value = data.title || "";
             descriptionInput.value = data.description || "";
             targetUrlInput.value = data.url || "";
             imageUrlInput.value = data.image && data.image !== DEFAULT_AVATAR ? data.image : "";
 
-            panelTitle.textContent = "Admin Panel — Edit Post";
+            panelTitle.textContent = "Edit Post";
             savePostBtn.textContent = "Simpan Perubahan";
-            cancelEditBtn.classList.remove("hidden");
-            adminPanel.scrollIntoView({ behavior: "smooth" });
+            postModal.classList.remove("hidden");
         }
 
+        // Hapus Post
         async function handleDeletePost(postId, title) {
             if (!isAdmin) return;
-            const yakin = confirm(`Hapus post "${title}"?`);
+            const yakin = await showCustomConfirm(`Yakin ingin menghapus post "${title || "ini"}"?`, "Hapus Post");
             if (!yakin) return;
 
             try {
                 await deleteDoc(doc(db, "troll_tools_posts", postId));
                 if (editingPostIdInput.value === postId) {
-                    resetFormMode();
+                    closePostPopup();
                 }
+                await showCustomAlert("Post berhasil dihapus.", "Terhapus", "success");
             } catch (error) {
                 console.error("Gagal menghapus post:", error);
-                alert("Gagal menghapus post.");
+                await showCustomAlert("Gagal menghapus post. Periksa koneksi atau Firestore Rules.", "Error", "error");
             }
         }
 
+        // Simpan Post Baru atau Update Post yang Diedit
         postForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             if (!isAdmin) {
-                alert("Hanya admin yang bisa membuat atau mengedit post!");
+                await showCustomAlert("Hanya admin yang bisa membuat atau mengedit post.", "Akses Ditolak", "error");
                 return;
             }
 
@@ -662,24 +839,28 @@
                         ...payload,
                         updatedAt: serverTimestamp()
                     });
-                    alert("Post berhasil diperbarui!");
+                    postModal.classList.add("hidden");
+                    resetFormMode();
+                    await showCustomAlert("Perubahan post berhasil disimpan!", "Post Diperbarui", "success");
                 } else {
                     await addDoc(postsCollection, {
                         ...payload,
                         createdAt: serverTimestamp()
                     });
-                    alert("Post baru berhasil dipublikasikan!");
+                    postModal.classList.add("hidden");
+                    resetFormMode();
+                    await showCustomAlert("Post baru berhasil dipublikasikan ke semua orang!", "Berhasil Dipublish", "success");
                 }
-                resetFormMode();
             } catch (error) {
                 console.error("Gagal menyimpan post:", error);
-                alert("Terjadi kesalahan saat menyimpan post.");
+                await showCustomAlert("Terjadi kesalahan saat menyimpan post ke Firebase.", "Gagal Menyimpan", "error");
             } finally {
                 savePostBtn.disabled = false;
                 savePostBtn.textContent = editingPostIdInput.value ? "Simpan Perubahan" : "Publish Post";
             }
         });
 
+        // Render daftar post ke layar
         function renderPosts(docsList) {
             postsContainer.innerHTML = "";
 
