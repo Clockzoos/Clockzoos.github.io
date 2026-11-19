@@ -3,183 +3,464 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Strike Script Key Generation</title>
-    <link rel="icon" type="image/jpeg" href="https://i.ibb.co.com/p6YWQyxK/1794896099706.jpg">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <title>Bot Spammers</title>
+    <link rel="icon" type="image/jpeg" href="https://i.ibb.co.com/RpdnZ1mZ/icon.jpg">
     <style>
         :root {
-            --bg-primary: #000000;
-            --surface: #050505;
-            --color-primary: #eab308;
-            --color-primary-hover: #ca8a04;
-            --color-border: #1a1a1a;
-            --color-text: #ffffff;
-            --color-text-muted: #a0a0a0;
-            --color-success: #22c55e;
-            --color-danger: #ef4444;
+            --bg-color: #0b090a;
+            --panel-color: #161214;
+            --input-color: #080607;
+            --text-color: #f3e8ea;
+            --text-muted: #9e8a8d;
+            --accent-color: #dc2626;
+            --accent-hover: #b91c1c;
+            --accent-glow: rgba(220, 38, 38, 0.35);
+            --border-color: #2c1d20;
+            --success-color: #16a34a;
+            --warning-color: #eab308;
         }
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            background: var(--bg-primary); color: var(--color-text);
-            font-family: 'Inter', sans-serif; display: flex;
-            justify-content: center; align-items: center; min-height: 100vh; padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at top center, #260c0e 0%, #0b090a 65%);
+            color: var(--text-color);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
-        .card {
-            background: var(--surface); border: 1px solid var(--color-border);
-            border-radius: 20px; padding: 36px; width: 100%; max-width: 420px; text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.9);
+
+        .container {
+            width: 100%;
+            max-width: 680px;
+            background: var(--panel-color);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(220, 38, 38, 0.08);
+            border: 1px solid var(--border-color);
         }
-        .logo { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin: 0 auto 16px; border: 2px solid var(--color-primary); }
-        h2 { font-size: 20px; margin-bottom: 8px; color: #fff; }
-        p { font-size: 13px; color: var(--color-text-muted); margin-bottom: 24px; }
-        .btn {
-            background: var(--color-primary); color: #000; border: none;
-            padding: 13px 20px; border-radius: 12px; font-weight: 700; cursor: pointer;
-            width: 100%; font-size: 14px; transition: 0.2s; text-decoration: none; display: inline-block;
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
         }
-        .btn:hover { background: var(--color-primary-hover); }
-        .btn-success { background: var(--color-success); color: #fff; }
-        .btn-danger { background: var(--color-danger); color: #fff; margin-top: 10px; font-size: 12px; padding: 10px; }
-        .btn-danger:hover { background: #dc2626; }
-        .key-box {
-            background: #0a0a0a; border: 1px dashed var(--color-primary);
-            padding: 14px; border-radius: 10px; font-family: monospace; font-size: 14px;
-            color: var(--color-primary); word-break: break-all; margin-top: 15px; display: none;
+
+        .header-brand img {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-color);
+            box-shadow: 0 0 14px var(--accent-glow);
+        }
+
+        .header-brand h2 {
+            margin: 0;
+            color: #ffffff;
+            font-size: 24px;
+            letter-spacing: 0.4px;
+        }
+
+        .header-brand p {
+            margin: 4px 0 0 0;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-color);
+            font-weight: 700;
+            margin: 24px 0 12px 0;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            color: #d6c3c6;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--input-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+        }
+
+        textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        .row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .row .form-group {
+            flex: 1;
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--input-color);
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            background: none;
+        }
+
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; }
+
+        .color-hex-text {
+            font-family: monospace;
+            font-size: 14px;
+            color: var(--text-color);
+            background: none !important;
+            border: none !important;
+            padding: 4px !important;
+            width: 100%;
+        }
+        .color-hex-text:focus { outline: none; box-shadow: none !important; }
+
+        .input-select-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        button.send-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 18px;
+            box-shadow: 0 4px 16px var(--accent-glow);
+        }
+
+        button.send-btn:hover {
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5);
+        }
+
+        button.send-btn:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #3a2a2d !important;
+            color: #7d686c !important;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            min-width: 280px;
+            max-width: 380px;
+            background: #1a1214;
+            color: #fff;
+            padding: 14px 18px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            border-left: 5px solid var(--accent-color);
+        }
+
+        .toast.success { border-left-color: var(--success-color); }
+        .toast.error { border-left-color: var(--accent-color); }
+        .toast.warning { border-left-color: var(--warning-color); }
+
+        @keyframes slideIn {
+            from { transform: translateX(110%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(110%); opacity: 0; }
+        }
+
+        @media (max-width: 600px) {
+            .row {
+                flex-direction: column;
+                gap: 0;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <img src="https://i.ibb.co.com/p6YWQyxK/1794896099706.jpg" class="logo" alt="Logo">
-        <h2>Strike Script Key Generation</h2>
-        <p id="status-desc">Complete the link to unlock your key.</p>
+    <div id="toast-container"></div>
 
-        <!-- Linkvertise Button -->
-        <div id="step-start">
-            <a href="https://link-center.net/7791978/WzmwVM2iH36x?r=https://clockzoos.github.io/?verified=true" class="btn" target="_blank">Proceed to Linkvertise</a>
+    <div class="container">
+        <div class="header-brand">
+            <img src="https://i.ibb.co.com/RpdnZ1mZ/icon.jpg" alt="Bot Spammers Icon">
+            <div>
+                <h2>Bot Spammers</h2>
+                <p>Send custom messages, GIFs, and embeds via Discord Webhooks.</p>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Webhook URL</label>
+            <input type="text" id="webhookUrl" placeholder="https://discord.com/api/webhooks/...">
         </div>
 
-        <!-- Claim Key Button -->
-        <div id="step-claim" style="display:none;">
-            <button class="btn btn-success" onclick="claimKey()">Claim My 24H Key</button>
+        <div class="row">
+            <div class="form-group">
+                <label>Bot Username (optional)</label>
+                <input type="text" id="username" placeholder="Bot Spammers">
+            </div>
+            <div class="form-group">
+                <label>Bot Avatar URL (optional)</label>
+                <div class="input-select-group">
+                    <input type="text" id="avatarUrl" value="https://i.ibb.co.com/RpdnZ1mZ/icon.jpg" placeholder="https://... or select preset">
+                    <select onchange="selectPresetImage('avatarUrl', this.value)">
+                        <option value="">-- Select Preset Avatar --</option>
+                        <option value="https://i.ibb.co.com/RpdnZ1mZ/icon.jpg" selected>Default Profile Icon</option>
+                        <option value="https://cdn.discordapp.com/attachments/1568549380779282525/1570665206365950094/1eeecb4da59989b1560292e1a43c95b5.jpg">Image Preset 1</option>
+                        <option value="https://cdn.discordapp.com/attachments/1568549380779282525/1570665206701363321/9cfba9b4cc1d06fbe0f00263cbc926de.jpg">Image Preset 2</option>
+                        <option value="https://cdn.discordapp.com/attachments/1568549380779282525/1570665207385300992/c7719f42290a0bc802979589327a0967.jpg">Image Preset 3</option>
+                        <option value="https://cdn.discordapp.com/attachments/1568549380779282525/1570665207741808650/21782f4bfbc674a3ed5bfb40dfcaef79.jpg">Image Preset 4</option>
+                    </select>
+                </div>
+            </div>
         </div>
 
-        <!-- Result Key Box -->
-        <div id="key-display-container" class="key-box">
-            <div id="final-key-text" style="margin-bottom: 8px; font-weight: bold;"></div>
-            <button class="btn btn-success" style="padding: 8px; font-size: 12px;" onclick="copyKey()">Copy Key</button>
+        <div class="section-title">Content & GIF Details</div>
+
+        <div class="form-group">
+            <label>Message Content or Direct GIF Link (optional)</label>
+            <input type="text" id="content" placeholder="Type message or paste Tenor/Giphy link here...">
         </div>
 
-        <!-- Tombol Reset Limit (Hanya untuk memudahkan testing Anda sekarang) -->
-        <button class="btn btn-danger" onclick="resetLimit()">Reset My Daily Limit (Test Mode)</button>
+        <div class="form-group">
+            <label>Embed Title (optional)</label>
+            <input type="text" id="embedTitle" placeholder="Announcement Title">
+        </div>
+
+        <div class="form-group">
+            <label>Embed Description (optional)</label>
+            <textarea id="embedDesc" placeholder="Write your embed description here..."></textarea>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label>Embed Color</label>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="embedColorPicker" value="#dc2626" oninput="syncColor('picker')">
+                    <input type="text" id="embedColorHex" class="color-hex-text" value="#dc2626" maxlength="7" oninput="syncColor('text')">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Embed Image or GIF URL (optional)</label>
+                <div class="input-select-group">
+                    <input type="text" id="embedImage" placeholder="https://.../animation.gif or image link">
+                    <select onchange="selectPresetImage('embedImage', this.value)">
+                        <option value="">-- Select Preset Image / GIF --</option>
+                        <option value="https://media.tenor.com/x8v1oNUOmg4AAAAd/rickroll-roll.gif">GIF Preset 1</option>
+                        <option value="https://media.tenor.com/2roX3uxz_68AAAAC/cat-space.gif">GIF Preset 2</option>
+                        <option value="https://cdn.discordapp.com/attachments/1568549380779282525/1570665206365950094/1eeecb4da59989b1560292e1a43c95b5.jpg">Image Preset 1</option>
+                        <option value="https://cdn.discordapp.com/attachments/1568549380779282525/1570665206701363321/9cfba9b4cc1d06fbe0f00263cbc926de.jpg">Image Preset 2</option>
+                        <option value="https://cdn.discordapp.com/attachments/1568549380779282525/1570665207385300992/c7719f42290a0bc802979589327a0967.jpg">Image Preset 3</option>
+                        <option value="https://cdn.discordapp.com/attachments/1568549380779282525/1570665207741808650/21782f4bfbc674a3ed5bfb40dfcaef79.jpg">Image Preset 4</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">Spam Settings</div>
+
+        <div class="row">
+            <div class="form-group">
+                <label>Loop Count</label>
+                <input type="number" id="loopCount" value="1" min="1" max="100">
+            </div>
+            <div class="form-group">
+                <label>Delay Seconds</label>
+                <input type="number" id="delayTime" value="1" min="1" max="60">
+            </div>
+        </div>
+
+        <button class="send-btn" id="sendBtn" onclick="sendWebhook()">Send Message</button>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        const firebaseConfig = {
-          apiKey: "AIzaSyBkLQc3Lhn9Rnq2NTMezoW0eTfNDyFIFyw",
-          authDomain: "key-server-af0df.firebaseapp.com",
-          projectId: "key-server-af0df",
-          storageBucket: "key-server-af0df.firebasestorage.app",
-          messagingSenderId: "464032962986",
-          appId: "1:464032962986:web:d6abf41d878fa32102f3d3"
-        };
-
-        const firebaseApp = initializeApp(firebaseConfig);
-        const db = getFirestore(firebaseApp);
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const todayDate = new Date().toDateString();
-            const lastGeneratedDate = localStorage.getItem('strike_last_date');
-            const urlParams = new URLSearchParams(window.location.search);
-
-            if (lastGeneratedDate === todayDate) {
-                document.getElementById('step-start').style.display = 'none';
-                document.getElementById('step-claim').style.display = 'none';
-                document.getElementById('status-desc').textContent = "You have already generated a key today. Please come back tomorrow!";
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Limit Reached',
-                    text: 'Your device has already claimed a key today. (You can use the Reset button below to test again)',
-                    confirmButtonColor: '#eab308'
-                });
-                return;
+    <script>
+        function selectPresetImage(targetId, url) {
+            if (url) {
+                document.getElementById(targetId).value = url;
             }
-
-            if (urlParams.get('verified') === 'true') {
-                sessionStorage.setItem('link_passed', 'true');
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
-
-            if (sessionStorage.getItem('link_passed') === 'true') {
-                document.getElementById('status-desc').textContent = "Link verified successfully! Click below to claim your key.";
-                document.getElementById('step-start').style.display = 'none';
-                document.getElementById('step-claim').style.display = 'block';
-            } else {
-                document.getElementById('status-desc').textContent = "Complete the Linkvertise target to generate your key.";
-                document.getElementById('step-start').style.display = 'block';
-                document.getElementById('step-claim').style.display = 'none';
-            }
-        });
-
-        window.claimKey = async function() {
-            const todayDate = new Date().toDateString();
-
-            if (localStorage.getItem('strike_last_date') === todayDate) {
-                Swal.fire('Error', 'You can only generate 1 key per day.', 'error');
-                return;
-            }
-
-            const r1 = Math.floor(1000 + Math.random() * 9000);
-            const r2 = Math.floor(1000 + Math.random() * 9000);
-            const newKey = `STRIKE-${r1}-${r2}`;
-            const expiryTime = Math.floor(Date.now() / 1000) + (24 * 60 * 60);
-
-            try {
-                await setDoc(doc(db, "keys", newKey), {
-                    key: newKey,
-                    ExpiryTime: expiryTime,
-                    used: false,
-                    created: new Date().toISOString()
-                });
-
-                localStorage.setItem('strike_last_date', todayDate);
-                sessionStorage.removeItem('link_passed');
-
-                document.getElementById('step-claim').style.display = 'none';
-                document.getElementById('status-desc').textContent = "Your 24-hour access key is ready:";
-                document.getElementById('final-key-text').textContent = newKey;
-                document.getElementById('key-display-container').style.display = 'block';
-
-                Swal.fire('Success!', 'Key generated successfully.', 'success');
-            } catch (e) {
-                Swal.fire('Error', 'Failed to save key to database.', 'error');
-            }
-        };
-
-        window.copyKey = function() {
-            const keyText = document.getElementById('final-key-text').textContent;
-            navigator.clipboard.writeText(keyText);
-            Swal.fire('Copied!', 'Key copied to clipboard.', 'success');
         }
 
-        // Fungsi khusus untuk mereset limit harian agar Anda bisa melakukan test berkali-kali
-        window.resetLimit = function() {
-            localStorage.removeItem('strike_last_date');
-            sessionStorage.clear();
-            Swal.fire({
-                icon: 'success',
-                title: 'Limit Reset!',
-                text: 'Your daily limit has been cleared. Page will reload.',
-                confirmButtonColor: '#22c55e'
-            }).then(() => {
-                window.location.href = window.location.pathname;
-            });
+        function syncColor(source) {
+            const picker = document.getElementById('embedColorPicker');
+            const hexInput = document.getElementById('embedColorHex');
+            if (source === 'picker') {
+                hexInput.value = picker.value;
+            } else {
+                let val = hexInput.value.trim();
+                if (!val.startsWith('#')) val = '#' + val;
+                if (/^#[0-9A-Fa-f]{6}$/.test(val)) picker.value = val;
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            let icon = type === 'error' ? '❌' : (type === 'warning' ? '⚠️' : '✅');
+            toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function hexToDecimal(hex) {
+            let cleanHex = hex.replace("#", "").trim();
+            if (cleanHex.length !== 6) cleanHex = "dc2626";
+            return parseInt(cleanHex, 16);
+        }
+
+        async function sendWebhook() {
+            const webhookUrl = document.getElementById('webhookUrl').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const avatarUrl = document.getElementById('avatarUrl').value.trim();
+            const content = document.getElementById('content').value.trim();
+            const embedTitle = document.getElementById('embedTitle').value.trim();
+            const embedDesc = document.getElementById('embedDesc').value.trim();
+            const hexColor = document.getElementById('embedColorHex').value;
+            const embedImage = document.getElementById('embedImage').value.trim();
+            const loopCount = parseInt(document.getElementById('loopCount').value) || 1;
+            const delayTime = (parseInt(document.getElementById('delayTime').value) || 1) * 1000;
+            const sendBtn = document.getElementById('sendBtn');
+
+            if (!webhookUrl) {
+                showToast('Webhook URL is required!', 'error');
+                return;
+            }
+
+            if (!content && !embedTitle && !embedDesc && !embedImage) {
+                showToast('Please fill at least one content or embed field!', 'warning');
+                return;
+            }
+
+            const payload = {};
+            if (username) payload.username = username;
+            if (avatarUrl) payload.avatar_url = avatarUrl;
+            if (content) payload.content = content;
+
+            if (embedTitle || embedDesc || embedImage) {
+                const embed = {};
+                if (embedTitle) embed.title = embedTitle;
+                if (embedDesc) embed.description = embedDesc;
+                embed.color = hexToDecimal(hexColor);
+                if (embedImage) embed.image = { url: embedImage };
+                payload.embeds = [embed];
+            }
+
+            sendBtn.disabled = true;
+            showToast(`Starting delivery (0/${loopCount})...`, 'warning');
+
+            let successCount = 0;
+            for (let i = 1; i <= loopCount; i++) {
+                try {
+                    const response = await fetch(webhookUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.status === 429) {
+                        showToast(`Hit Discord Rate Limit! Stopped at message #${i}.`, 'error');
+                        break;
+                    }
+
+                    if (!response.ok && response.status !== 204) {
+                        throw new Error(`HTTP Error: ${response.status}`);
+                    }
+
+                    successCount++;
+                    if (i < loopCount) {
+                        await new Promise(resolve => setTimeout(resolve, delayTime));
+                    }
+                } catch (error) {
+                    showToast(`Failed to send: ${error.message}`, 'error');
+                    break;
+                }
+            }
+
+            if (successCount > 0) {
+                showToast(`Successfully sent ${successCount} message(s)!`, 'success');
+            }
+            sendBtn.disabled = false;
         }
     </script>
 </body>
